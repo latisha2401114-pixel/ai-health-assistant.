@@ -10,6 +10,7 @@ import requests
 import ssl
 import certifi
 import os
+import json
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -20,10 +21,11 @@ app = Flask(__name__)
 app.secret_key = "SECRET_KEY_123"
 
 # ================= FIREBASE INIT =================
-cred = credentials.Certificate("firebase_key.json")
+firebase_key = json.loads(os.environ["FIREBASE_KEY"])
+cred = credentials.Certificate(firebase_key)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
-FAST2SMS_API_KEY = "TxQMK9N5beRi1GXSnhLvCrzu0loDAOtW8B76E2wgaqmJy3YVcHZsIVgQukzv5BwMmq6HToxiWOdNyAEa"
+FAST2SMS_API_KEY = os.environ.get("FAST2SMS_API_KEY")
 
 
 # ================= SYMPTOM → DEPARTMENT MAP =================
