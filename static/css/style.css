@@ -1,0 +1,344 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #eef1f5;
+}
+
+.app-layout {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    background: #0b5ed7;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px;
+    margin-top: 10px;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.sidebar.doctor {
+    background: #198754;
+}
+
+.main {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profile {
+    font-size: 22px;
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    flex: 1;
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    font-size: 18px;
+}
+
+.blue { background: #0d6efd; }
+.green { background: #198754; }
+.red { background: #dc3545; }
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.assistant {
+    background: #f1f8ff;
+}
+
+.appointment {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.appointment.doctor {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    color: white;
+    font-size: 13px;
+}
+
+.badge.confirmed { background: green; }
+.badge.pending { background: orange; }
+.badge.completed { background: blue; }
+
+textarea {
+    width: 100%;
+    height: 60px;
+    margin-top: 10px;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+select, button {
+    padding: 8px;
+}
+
+.btn {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.link {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.emergency-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #dc3545;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-size: 16px;
+    border: none;
+}
+/* ===== APPOINTMENT CARD GRID ===== */
+.appointments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* ===== APPOINTMENT CARD ===== */
+.appointment-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
+}
+
+.appointment-card:hover {
+    transform: translateY(-4px);
+}
+
+/* Header */
+.appointment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.appointment-header .dept {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* Time */
+.time {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+/* Prescription Box */
+.prescription-box {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.prescription-box h4 {
+    margin: 0 0 6px;
+}
+
+/* Badges */
+.badge.completed {
+    background: #0d6efd;
+}
+
+.badge.pending {
+    background: #ffc107;
+    color: black;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: #0d6efd;
+    color: white;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.btn.danger {
+    background: #dc3545;
+}
+
+.muted {
+    color: #777;
+    font-size: 13px;
+}
+/* ================= AI ASSISTANT ================= */
+
+.ai-card {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.mic-btn {
+    background: linear-gradient(135deg, #0d6efd, #6610f2);
+    color: white;
+    padding: 14px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    margin: 15px 0;
+}
+
+.mic-btn:hover {
+    opacity: 0.9;
+}
+
+.ai-status {
+    font-size: 14px;
+    color: #555;
+}
+
+.conversation-box {
+    margin-top: 15px;
+    max-height: 250px;
+    overflow-y: auto;
+    text-align: left;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.conversation-box p {
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+.sub {
+    color: #666;
+    font-size: 14px;
+}
+.appointments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.appointment-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.time {
+    margin: 8px 0;
+    color: #555;
+}
+
+.prescription-box {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.btn.small {
+    margin-top: 10px;
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+.btn.danger {
+    background: #dc3545;
+}
+
+.muted {
+    color: #888;
+    font-style: italic;
+}
+.prescription-card {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.prescription-card h4 {
+    margin: 0 0 8px;
+    color: #0d6efd;
+}
+
+.pres-text {
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 8px;
+    white-space: pre-wrap;
+}
+
+

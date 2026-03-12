@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Health Assistant</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0d6efd, #20c997);
+            overflow: hidden;
+        }
+
+        /* Floating background circles */
+        body::before, body::after {
+            content: "";
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 6s infinite alternate ease-in-out;
+        }
+
+        body::before {
+            top: -100px;
+            left: -100px;
+        }
+
+        body::after {
+            bottom: -100px;
+            right: -100px;
+        }
+
+        @keyframes float {
+            from { transform: translateY(0px); }
+            to { transform: translateY(40px); }
+        }
+
+        .login-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(20px);
+            padding: 50px 40px;
+            border-radius: 20px;
+            text-align: center;
+            width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            color: white;
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-card h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .login-card p {
+            font-size: 14px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .login-btn {
+            display: block;
+            padding: 14px;
+            margin: 15px 0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .patient-btn {
+            background: white;
+            color: #0d6efd;
+        }
+
+        .doctor-btn {
+            background: #198754;
+            color: white;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        }
+
+        .icon {
+            margin-right: 8px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="login-card">
+        <h1>🏥 AI Health Assistant</h1>
+        <p>Select your login type to continue</p>
+
+        <a href="{{ url_for('login_patient') }}" class="login-btn patient-btn">
+            👤 Patient Login
+        </a>
+
+        <a href="{{ url_for('login_doctor') }}" class="login-btn doctor-btn">
+            🩺 Doctor Login
+        </a>
+    </div>
+
+</body>
+</html>

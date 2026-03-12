@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar doctor">
+        <h2>👨‍⚕️ Doctor</h2>
+        <a class="active">Dashboard</a>
+        <a href="/logout">Logout</a>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="header">
+            <h3>Doctor Dashboard</h3>
+        </header>
+
+        <!-- Appointments -->
+        <section class="card">
+            <h3>📋 Appointments</h3>
+
+            {% if appointments|length == 0 %}
+                <p>No appointments yet.</p>
+            {% endif %}
+
+            {% for appointment in appointments %}
+            <div class="appointment doctor" style="border:1px solid #ddd; padding:15px; margin-bottom:15px;">
+
+                <h4>{{ appointment.patient_name }}</h4>
+                <p>
+                    <b>Department:</b> {{ appointment.department }} <br>
+                    <b>Time:</b> {{ appointment.time }}
+                </p>
+
+                {% if appointment.status != "Completed" %}
+                    <textarea
+                        id="prescription_{{ appointment.id }}"
+                        placeholder="Enter prescription here..."
+                        style="width:100%; height:100px;"
+                        required
+                    ></textarea>
+
+                    <br><br>
+
+                    <button class="btn"
+                        onclick="savePrescription('{{ appointment.id }}')">
+                        💾 Save Prescription
+                    </button>
+                {% else %}
+                    <p style="color:green;"><b>✔ Prescription completed</b></p>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+        </section>
+
+    </main>
+</div>
+
+<!-- SCRIPT -->
+<script>
+function savePrescription(appointmentId) {
+    const textarea = document.getElementById("prescription_" + appointmentId);
+
+    if (!textarea) {
+        alert("Prescription box not found");
+        return;
+    }
+
+    const prescription = textarea.value.trim();
+
+    if (!prescription) {
+        alert("Please enter prescription");
+        return;
+    }
+
+    fetch("/add_prescription", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            appointment_id: appointmentId,
+            prescription: prescription
+        })
+    })
+    .then(res => res.json())
+    .then(() => {
+        alert("Prescription saved & sent to patient 📩");
+        location.reload();
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Error saving prescription");
+    });
+}
+</script>
+
+</body>
+</html>

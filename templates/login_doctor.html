@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Login | AI Health</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+
+<div class="login-container">
+    <div class="login-card doctor">
+        <h2>👨‍⚕️ AI Health</h2>
+        <p class="subtitle">Doctor Login</p>
+
+        <form method="POST">
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter email" required>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter password" required>
+            </div>
+
+            <button type="submit" class="btn doctor-btn">Login</button>
+        </form>
+
+        <p class="footer-text">
+            Are you a patient? <a href="/login_patient">Patient Login</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

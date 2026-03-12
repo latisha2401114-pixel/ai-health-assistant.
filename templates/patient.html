@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>🏥 AI Health</h2>
+        <a onclick="showDashboard()" class="active">Dashboard</a>
+        <a onclick="showAppointments()">Appointments</a>
+        <a onclick="showPrescriptions()">Prescriptions</a>
+        <a href="/logout">Logout</a>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="header">
+            <h3>Welcome, Patient</h3>
+            <div class="profile">🧑‍⚕️</div>
+        </header>
+
+        <!-- Dashboard -->
+        <section id="dashboardSection">
+
+            <!-- Stats -->
+            <section class="stats">
+                <div class="stat-card blue">
+                    <h4>Appointments</h4>
+                    <p>{{ appointments|length }}</p>
+                </div>
+
+                <div class="stat-card green">
+                    <h4>Prescriptions</h4>
+                    <p>Available</p>
+                </div>
+
+                <div class="stat-card red">
+                    <h4>Emergency</h4>
+                    <p>24x7</p>
+                </div>
+            </section>
+
+            <!-- AI Assistant -->
+            <section class="card assistant ai-card">
+                <h3>🎤 AI Health Assistant</h3>
+                <p class="sub">Tap Speak and talk in Tamil / English</p>
+
+                <button id="micBtn" class="mic-btn">
+                    🎙️ Speak to AI
+                </button>
+
+                <p id="status" class="ai-status">Idle</p>
+                <div id="conversation" class="conversation-box"></div>
+            </section>
+
+        </section>
+
+        <!-- Appointments -->
+        <section id="appointmentsSection" style="display:none;">
+            <h3>📅 My Appointments</h3>
+
+            <div class="appointments-grid">
+
+                {% for appointment in appointments %}
+
+                <div class="appointment-card">
+
+                    <div class="appointment-header">
+                        <span class="dept">{{ appointment.department }}</span>
+
+                        <span class="badge {{ appointment.status|lower }}">
+                            {{ appointment.status }}
+                        </span>
+                    </div>
+
+                    <p class="time">🕒 {{ appointment.time }}</p>
+
+                    <!-- Completed Appointment -->
+                    {% if appointment.status == "Completed" %}
+
+                        {% if appointment.prescription %}
+
+                        <div class="prescription-box">
+                            <h4>📝 Prescription</h4>
+
+                            <p>{{ appointment.prescription }}</p>
+
+                            <a href="/download_prescription/{{ appointment.id }}" class="btn">
+                                ⬇ Download PDF
+                            </a>
+                        </div>
+
+                        {% else %}
+
+                        <p class="muted">Prescription not uploaded yet</p>
+
+                        {% endif %}
+
+                    {% elif appointment.status == "Cancelled" %}
+
+                        <p style="color:red; font-weight:bold;">❌ Appointment Cancelled</p>
+
+                    {% else %}
+
+                        <!-- Cancel Button -->
+                        <button onclick="cancelAppointment('{{ appointment.id }}')" class="btn danger">
+                            ❌ Cancel Appointment
+                        </button>
+
+                    {% endif %}
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+        </section>
+
+        <!-- Prescriptions -->
+        <section id="prescriptionsSection" class="card" style="display:none;">
+            <h3>📝 My Prescriptions</h3>
+
+            <div id="prescriptionList">
+                <p>Loading prescriptions...</p>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- Emergency Button -->
+<button id="emergencyBtn" class="emergency-btn">🚑 Emergency</button>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+<script>
+
+function showDashboard() {
+    dashboardSection.style.display = "block";
+    appointmentsSection.style.display = "none";
+    prescriptionsSection.style.display = "none";
+}
+
+function showAppointments() {
+    dashboardSection.style.display = "none";
+    appointmentsSection.style.display = "block";
+    prescriptionsSection.style.display = "none";
+}
+
+function showPrescriptions() {
+    dashboardSection.style.display = "none";
+    appointmentsSection.style.display = "none";
+    prescriptionsSection.style.display = "block";
+
+    loadPrescriptions();
+}
+
+async function loadPrescriptions() {
+
+    const container = document.getElementById("prescriptionList");
+
+    container.innerHTML = "<p>Loading...</p>";
+
+    const res = await fetch("/my_prescriptions");
+    const data = await res.json();
+
+    if (data.length === 0) {
+        container.innerHTML = "<p>No prescriptions available.</p>";
+        return;
+    }
+
+    container.innerHTML = "";
+
+    data.forEach(p => {
+
+        const div = document.createElement("div");
+
+        div.className = "prescription-card";
+
+        div.innerHTML = `
+            <h4>🩺 ${p.department}</h4>
+            <p><b>Date:</b> ${p.appointment_date || "_"}</p>
+            <p class="pres-text">${p.prescription}</p>
+        `;
+
+        container.appendChild(div);
+
+    });
+}
+
+function cancelAppointment(id){
+
+    if(!confirm("Do you want to cancel this appointment?")) return;
+
+    fetch("/cancel_appointment",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            appointment_id:id
+        })
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.status==="success"){
+            alert("Appointment Cancelled");
+            location.reload();
+        }
+    });
+
+}
+
+</script>
+
+</body>
+</html>
