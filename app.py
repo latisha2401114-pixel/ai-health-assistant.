@@ -9,6 +9,7 @@ import io
 import requests
 import ssl
 import certifi
+import os
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -498,4 +499,5 @@ def logout():
 
 # ================= RUN =================
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
