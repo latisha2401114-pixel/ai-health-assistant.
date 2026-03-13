@@ -348,21 +348,25 @@ def complete_appointment():
 
     return jsonify({"status": "success"})
 @app.route("/add_prescription", methods=["POST"])
+@app.route("/add_prescription", methods=["POST"])
 def add_prescription():
-    data = request.json
-    appointment_id = data["appointment_id"]
-    prescription = data["prescription"]
+    try:
+        data = request.json
+        appointment_id = data["appointment_id"]
+        prescription = data["prescription"]
 
-    appointment_ref = db.collection("appointments").document(appointment_id)
-    appointment = appointment_ref.get().to_dict()
+        appointment_ref = db.collection("appointments").document(appointment_id)
+        appointment = appointment_ref.get().to_dict()
 
-    appointment_ref.update({
-        "prescription": prescription,
-        "status": "Completed"
-    })
+        # Save prescription
+        appointment_ref.update({
+            "prescription": prescription,
+            "status": "Completed"
+        })
 
-    # 📧 EMAIL NOTIFICATION
-    email_message = f"""
+        # EMAIL
+        try:
+            email_message = f"""
 Appointment Completed
 
 Patient: {appointment['patient_name']}
@@ -371,43 +375,55 @@ Time: {appointment['time']}
 
 Prescription:
 {prescription}
-
-Thank you for using AI Health Assistant.
 """
+            email_status, email_error = send_email_notification(
+                appointment["patient_id"],
+                "Your Prescription",
+                email_message
+            )
 
-    email_status, email_error = send_email_notification(
-        appointment["patient_id"],
-        "Your Prescription",
-        email_message
-    )
+            appointment_ref.update({
+                "email_status": email_status,
+                "email_error": str(email_error) if email_error else None
+            })
 
-    appointment_ref.update({
-        "email_status": email_status,
-        "email_error": str(email_error) if email_error else None
-    })
+        except Exception as e:
+            appointment_ref.update({
+                "email_status": "failed",
+                "email_error": str(e)
+            })
 
-    # 📱 SMS NOTIFICATION
-    sms_text = f"""
-AI மருத்துவ உதவியாளர் 🧑‍⚕️
-துறை: {appointment['department']}
-நேரம்: {appointment['time']}
-மருந்து:
+        # SMS
+        try:
+            sms_text = f"""
+AI Health Assistant
+Department: {appointment['department']}
+Time: {appointment['time']}
+
+Prescription:
 {prescription}
-
-உடல் நலம் கவனிக்கவும் 🙏
 """
 
-    status, error = send_sms_fast2sms(
-        appointment["phone"],
-        sms_text
-    )
+            sms_status, sms_error = send_sms_fast2sms(
+                appointment["phone"],
+                sms_text
+            )
 
-    appointment_ref.update({
-        "sms_status": status,
-        "sms_error": str(error) if error else None
-    })
+            appointment_ref.update({
+                "sms_status": sms_status,
+                "sms_error": str(sms_error) if sms_error else None
+            })
 
-    return jsonify({"message": "Prescription saved & notifications sent"})
+        except Exception as e:
+            appointment_ref.update({
+                "sms_status": "failed",
+                "sms_error": str(e)
+            })
+
+        return jsonify({"status": "success"})
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
 
 @app.route("/my_prescriptions")
 def my_prescriptions():
