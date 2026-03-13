@@ -535,6 +535,7 @@ AI மருத்துவ உதவியாளர் 🏥
             })
 
     return "Reminders checked"
+
 def send_email_notification(to_email, subject, message):
     try:
         msg = MIMEText(message)
@@ -542,8 +543,11 @@ def send_email_notification(to_email, subject, message):
         msg["From"] = EMAIL_USER
         msg["To"] = to_email
 
+        context = ssl.create_default_context()
+
         server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
+        server.ehlo()
+        server.starttls(context=context)
         server.login(EMAIL_USER, EMAIL_PASS)
         server.sendmail(EMAIL_USER, to_email, msg.as_string())
         server.quit()
@@ -551,6 +555,7 @@ def send_email_notification(to_email, subject, message):
         return "sent", None
 
     except Exception as e:
+        print("EMAIL ERROR:", e)
         return "failed", str(e)
 @app.route("/logout")
 def logout():
