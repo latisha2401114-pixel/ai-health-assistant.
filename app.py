@@ -11,7 +11,8 @@ import ssl
 import certifi
 import os
 import json
-
+import smtplib
+from email.mime.text import MIMEText
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
@@ -26,7 +27,8 @@ cred = credentials.Certificate(firebase_key)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 FAST2SMS_API_KEY = os.environ.get("FAST2SMS_API_KEY")
-
+EMAIL_USER = os.environ.get("EMAIL_USER")
+EMAIL_PASS = os.environ.get("EMAIL_PASS")
 
 # ================= SYMPTOM → DEPARTMENT MAP =================
 SYMPTOM_MAP = {
@@ -359,6 +361,32 @@ def add_prescription():
         "status": "Completed"
     })
 
+    # 📧 EMAIL NOTIFICATION
+    email_message = f"""
+Appointment Completed
+
+Patient: {appointment['patient_name']}
+Department: {appointment['department']}
+Time: {appointment['time']}
+
+Prescription:
+{prescription}
+
+Thank you for using AI Health Assistant.
+"""
+
+    email_status, email_error = send_email_notification(
+        appointment["patient_id"],
+        "Your Prescription",
+        email_message
+    )
+
+    appointment_ref.update({
+        "email_status": email_status,
+        "email_error": str(email_error) if email_error else None
+    })
+
+    # 📱 SMS NOTIFICATION
     sms_text = f"""
 AI மருத்துவ உதவியாளர் 🧑‍⚕️
 துறை: {appointment['department']}
@@ -368,7 +396,6 @@ AI மருத்துவ உதவியாளர் 🧑‍⚕️
 
 உடல் நலம் கவனிக்கவும் 🙏
 """
-
 
     status, error = send_sms_fast2sms(
         appointment["phone"],
@@ -380,8 +407,7 @@ AI மருத்துவ உதவியாளர் 🧑‍⚕️
         "sms_error": str(error) if error else None
     })
 
-    return jsonify({"message": "Prescription saved & SMS processed"})
-
+    return jsonify({"message": "Prescription saved & notifications sent"})
 
 @app.route("/my_prescriptions")
 def my_prescriptions():
@@ -493,10 +519,28 @@ AI மருத்துவ உதவியாளர் 🏥
             })
 
     return "Reminders checked"
+def send_email_notification(to_email, subject, message):
+    try:
+        msg = MIMEText(message)
+        msg["Subject"] = subject
+        msg["From"] = EMAIL_USER
+        msg["To"] = to_email
+
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(EMAIL_USER, EMAIL_PASS)
+        server.sendmail(EMAIL_USER, to_email, msg.as_string())
+        server.quit()
+
+        return "sent", None
+
+    except Exception as e:
+        return "failed", str(e)
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/")
+
 
 
 # ================= RUN =================
