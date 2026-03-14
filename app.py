@@ -348,7 +348,6 @@ def complete_appointment():
 
     return jsonify({"status": "success"})
 @app.route("/add_prescription", methods=["POST"])
-@app.route("/add_prescription", methods=["POST"])
 def add_prescription():
     try:
         data = request.json
@@ -538,17 +537,16 @@ AI மருத்துவ உதவியாளர் 🏥
 
 def send_email_notification(to_email, subject, message):
     try:
-        msg = MIMEText(message)
+        msg = MIMEText(message, "plain", "utf-8")
         msg["Subject"] = subject
         msg["From"] = EMAIL_USER
         msg["To"] = to_email
 
-        context = ssl.create_default_context()
-
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.ehlo()
-        server.starttls(context=context)
+        # Gmail SMTP
+        server = smtplib.SMTP("smtp.gmail.com", 587, timeout=20)
+        server.starttls()
         server.login(EMAIL_USER, EMAIL_PASS)
+
         server.sendmail(EMAIL_USER, to_email, msg.as_string())
         server.quit()
 
